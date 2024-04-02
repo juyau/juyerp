@@ -1,0 +1,17 @@
+
+spring:
+  application:
+    name: juyerp
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.11.71:3306/juyerp?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+
+server:
+  port: 8181
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:au/juy/juyshop/mapper/xml/*.xml
+  type-aliases-package: au.juy.juyerp.vo

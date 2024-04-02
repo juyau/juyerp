@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <th:block th:include="common.html :: source"></th:block>
+</head>
+<body style="margin-left: 20px;margin-top: 10px;">
+<form name="form1" action="/materialInput/import" method="post" enctype="multipart/form-data" onsubmit="return check();">
+    <table width="100%" class="table table-celled">
+        <tr height="40">
+            <td><font color="red" size="3"><b>只支持扩展名为.xls和.xlsx的Excel文件，只有检查验证合格才能导入数据，导入可能要一些时间，请耐心等待</b></font></td>
+        </tr>
+        <tr height="40">
+            <td>请选择文件:<input  type="file" name="file" id="file"  style="width:300px" label='文件'/>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/excel/materialInput.xls"><b>下载导入模板</b></a></td>
+        </tr>
+        <tr height="40">
+            <td><input type="submit" class="easyui-linkbutton " value="提交">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+                <a class="easyui-linkbutton" plain="true" icon="icon-undo" href="javascript:void(0);" onclick="materialExport()">导出</a>
+                <input type="button" class="easyui-linkbutton " onclick="back()"    value="返回"></td>
+        </tr>
+    </table>
+</form>
+<br/>
+<font size="3" color="red"><b>
+    注意事项：<br/>
+    <hr color="red"/>
+    1.请先下载导入模板，按导入模板的格式填写数据；<br/>
+    2.导入数据时，文件必须关闭，不能在打开状态；<br/>
+</b></font>
+
+<center>
+    <font color="red" size="4">导入结果如下</font><br/><br/>
+    <font color="red" size="4" th:text="${errorMsg}"></font>
+</center>
+</body>
+</html>
