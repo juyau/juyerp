@@ -55,7 +55,7 @@ public class MaterialInputController {
             response.setCharacterEncoding("UTF-8");
             String fileName = URLEncoder.encode("Purchase Data", "UTF-8");
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            //获取数据
+            //read data from db
             List<MaterialInputExportModel> list = this.materialInputService.getExportList();
             EasyExcel.write(response.getOutputStream(), MaterialInputExportModel.class)
                     .registerWriteHandler(new CustomCellWriteHandler())
@@ -73,6 +73,14 @@ public class MaterialInputController {
         model.addAttribute("supplierList", supplierService.list());
         model.addAttribute("form", materialInputSearchForm);
         return "materialInputList";
+    }
+
+    @PostMapping("/verify")
+    @ResponseBody
+    public String verify(Integer status, String idArray){
+        boolean result = materialInputService.verify(status, idArray);
+        if (result) return "success";
+        return "fail";
     }
 
 }

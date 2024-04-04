@@ -196,4 +196,34 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
 
         return list;
     }
+
+    @Override
+    public boolean verify(Integer status, String idArray) {
+        // need to check status again, in case other user just did verify ??
+        boolean flag = false;
+        switch (status) {
+            case 1:
+                // verify
+                String[] ids = idArray.split(",");
+                for (String id : ids) {
+                    MaterialInput materialInput = materialInputMapper.selectById(id);
+
+                    assert materialInput != null;
+                    if (materialInput.getStatus() == 0){
+                        materialInput.setStatus(1);
+                    }
+
+                    int updated = materialInputMapper.updateById(materialInput);
+                    if (updated != 1) return false;
+                }
+                flag = true;
+                break;
+            case 2:
+                // receive
+                break;
+        }
+
+
+        return flag;
+    }
 }
