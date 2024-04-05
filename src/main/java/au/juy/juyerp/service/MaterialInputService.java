@@ -20,9 +20,11 @@ import java.util.List;
  */
 public interface MaterialInputService extends IService<MaterialInput> {
 
-    public ImportResult excelImport(InputStream inputStream);
-    public PageObject materialInputList(PageObject pageObject, MaterialInputSearchForm materialInputSearchForm);
+    ImportResult excelImport(InputStream inputStream);
+    PageObject materialInputList(PageObject pageObject, MaterialInputSearchForm materialInputSearchForm);
 
     List<MaterialInputExportModel> getExportList();
     boolean verifyOrStockin(Integer status, String idArray);
+
+    boolean delete(String idArray);
 }

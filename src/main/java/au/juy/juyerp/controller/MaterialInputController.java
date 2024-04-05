@@ -82,11 +82,19 @@ public class MaterialInputController {
         return "fail";
     }
 
-    @RequestMapping("/stockin")
+    @PostMapping("/stockin")
     @ResponseBody
     public String stockin(Integer status, String idArray){
         boolean result = materialInputService.verifyOrStockin(status, idArray);
         if (result) return "success";
+        return "fail";
+    }
+
+    @PostMapping("/delete")
+    @ResponseBody
+    public String delete(String idArray){
+        boolean deleted = materialInputService.delete(idArray);
+        if(deleted) return "success";
         return "fail";
     }
 
