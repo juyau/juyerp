@@ -24,5 +24,5 @@ public interface MaterialInputService extends IService<MaterialInput> {
     public PageObject materialInputList(PageObject pageObject, MaterialInputSearchForm materialInputSearchForm);
 
     List<MaterialInputExportModel> getExportList();
-    boolean verify(Integer status, String idArray);
+    boolean verifyOrStockin(Integer status, String idArray);
 }

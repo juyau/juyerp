@@ -104,21 +104,21 @@
             })
         }
 
-        function inStorage() {
+        function stockin() {
             let rows = $("#dgitem").datagrid("getSelections");
             if(rows.length == 0){
-                $.messager.alert("Info", "Please select items to receive.","error");
+                $.messager.alert("Info", "Please select items to stock in.","error");
                 return false;
             }
             let idArray = "";
             for(let i=0; i<rows.length; i++) {
                 let row = rows[i];
                 if (row.status == 'unverified') {
-                    $.messager.alert("Info", "Cannot receive unverified order.", "error");
+                    $.messager.alert("Info", "Cannot stock in unverified order.", "error");
                     return false;
                 }
                 if (row.status == 'received') {
-                    $.messager.alert("Info", "Cannot received orders already received.", "error");
+                    $.messager.alert("Info", "Cannot stock in orders already received.", "error");
                     return false;
                 }
                 if((i+1) != rows.length){
@@ -128,17 +128,17 @@
                 }
             }
 
-            $.messager.confirm('Note','Confirm received?',function(res){
+            $.messager.confirm('Note','Confirm stock in?',function(res){
                 if(res){
                     $.post(
-                        "/materialInput/inStorage?status=2&idArray="+idArray,
+                        "/materialInput/stockin?status=2&idArray="+idArray,
                         function (data) {
                             if(data == "success"){
-                                $.messager.alert("Info", "Received success.","info",function () {
+                                $.messager.alert("Info", "stock in success.","info",function () {
                                     window.location.href = "/materialInput/list";
                                 });
                             }else{
-                                $.messager.alert("Info", "received failed","error");
+                                $.messager.alert("Info", "stock in failed","error");
                             }
                         }
                     );
@@ -197,7 +197,7 @@
                 <a class="easyui-linkbutton" plain="true" icon="icon-add" href="javascript:void(0);" onclick="materialImport()">Import</a>
                 <a class="easyui-linkbutton" plain="true" icon="icon-undo" href="javascript:void(0);" onclick="materialExport()">Export</a>
                 <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="verify()">Verify</a>
-                <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="inStorage()">Receive</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="stockin()">Stock In</a>
                 <a class="easyui-linkbutton" plain="true" icon="icon-cut" href="javascript:void(0);" onclick="del()">Delete</a>
             </td>
             <td align="right">

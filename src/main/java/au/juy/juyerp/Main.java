@@ -40,7 +40,7 @@ public class Main {
         strategyConfig.setEntityLombokModel(true);
         strategyConfig.setNaming(NamingStrategy.underline_to_camel);
         strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel);
-        strategyConfig.setInclude("storage", "supplier");
+        strategyConfig.setInclude("orders", "order_detail");
         autoGenerator.setStrategy(strategyConfig);
 
         autoGenerator.execute();

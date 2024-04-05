@@ -1,7 +1,6 @@
 package au.juy.juyerp.controller;
 
 
-import au.juy.juyerp.entity.MaterialInput;
 import au.juy.juyerp.form.MaterialInputSearchForm;
 import au.juy.juyerp.service.MaterialInputService;
 import au.juy.juyerp.service.SupplierService;
@@ -78,7 +77,15 @@ public class MaterialInputController {
     @PostMapping("/verify")
     @ResponseBody
     public String verify(Integer status, String idArray){
-        boolean result = materialInputService.verify(status, idArray);
+        boolean result = materialInputService.verifyOrStockin(status, idArray);
+        if (result) return "success";
+        return "fail";
+    }
+
+    @RequestMapping("/stockin")
+    @ResponseBody
+    public String stockin(Integer status, String idArray){
+        boolean result = materialInputService.verifyOrStockin(status, idArray);
         if (result) return "success";
         return "fail";
     }

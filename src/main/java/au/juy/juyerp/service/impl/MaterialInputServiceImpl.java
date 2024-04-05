@@ -1,14 +1,8 @@
 package au.juy.juyerp.service.impl;
 
-import au.juy.juyerp.entity.Material;
-import au.juy.juyerp.entity.MaterialInput;
-import au.juy.juyerp.entity.Storage;
-import au.juy.juyerp.entity.Supplier;
+import au.juy.juyerp.entity.*;
 import au.juy.juyerp.form.MaterialInputSearchForm;
-import au.juy.juyerp.mapper.MaterialInputMapper;
-import au.juy.juyerp.mapper.MaterialMapper;
-import au.juy.juyerp.mapper.StorageMapper;
-import au.juy.juyerp.mapper.SupplierMapper;
+import au.juy.juyerp.mapper.*;
 import au.juy.juyerp.service.MaterialInputService;
 import au.juy.juyerp.utils.*;
 import com.alibaba.excel.EasyExcel;
@@ -24,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +47,13 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
 
     @Autowired
     private StorageMapper storageMapper;
+
+    @Autowired
+    private OrdersMapper ordersMapper;
+
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+
     @Override
     public ImportResult excelImport(InputStream inputStream) {
         // read excel data list
@@ -198,13 +201,13 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
     }
 
     @Override
-    public boolean verify(Integer status, String idArray) {
+    public boolean verifyOrStockin(Integer status, String idArray) {
         // need to check status again, in case other user just did verify ??
         boolean flag = false;
+        String[] ids = idArray.split(",");
         switch (status) {
             case 1:
                 // verify
-                String[] ids = idArray.split(",");
                 for (String id : ids) {
                     MaterialInput materialInput = materialInputMapper.selectById(id);
 
@@ -212,7 +215,6 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
                     if (materialInput.getStatus() == 0){
                         materialInput.setStatus(1);
                     }
-
                     int updated = materialInputMapper.updateById(materialInput);
                     if (updated != 1) return false;
                 }
@@ -220,6 +222,43 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
                 break;
             case 2:
                 // receive
+                for (String id : ids) {
+                    MaterialInput materialInput = materialInputMapper.selectById(id);
+                    assert materialInput != null;
+
+                    // create order number
+                    Integer count = ordersMapper.selectCount(null);
+                    String orderNo = CommonUtils.createOrderNo(count, 1);
+
+                    // insert order table
+                    Orders order = new Orders();
+                    BeanUtils.copyProperties(materialInput, order);
+                    order.setOrderType(1);
+                    order.setInvalid(1);
+                    order.setStatus(status);
+                    order.setOrderNo(orderNo);
+                    order.setVerifyDate(LocalDateTime.now());
+                    order.setVerifyPerson("managerSam");
+                    int insert = ordersMapper.insert(order);
+                    if(insert != 1) return false;
+
+
+                    // insert order_detail table
+                    OrderDetail orderDetail = new OrderDetail();
+                    BeanUtils.copyProperties(materialInput, orderDetail);
+                    orderDetail.setOrderNo(orderNo);
+                    orderDetail.setOrderFlag("normal");
+                    int inserted = orderDetailMapper.insert(orderDetail);
+                    if(inserted != 1) return false;
+
+                   // update material input status
+                    materialInput.setStatus(status);
+                    materialInput.setOrderNo(orderNo);
+
+                    int updated = materialInputMapper.updateById(materialInput);
+                    if (updated != 1) return false;
+                }
+                flag = true;
                 break;
         }
 
