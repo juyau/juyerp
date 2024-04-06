@@ -49,5 +49,21 @@ public class OrdersController {
         return "failed";
     }
 
+    @PostMapping("/batchVerify")
+    @ResponseBody
+    public String batchVerify(String orderNoArr){
+        boolean verified = ordersService.batchVerify(orderNoArr);
+        if(verified) return "success";
+        return "failed";
+    }
+
+    @PostMapping("/batchInvalid")
+    @ResponseBody
+    public String batchInvalid(String orderNoArr){
+        boolean verified = ordersService.batchInvalidate(orderNoArr);
+        if(verified) return "success";
+        return "failed";
+    }
+
 }
 

@@ -7,9 +7,11 @@ import au.juy.juyerp.form.OrderSearchForm;
 import au.juy.juyerp.mapper.OrderDetailMapper;
 import au.juy.juyerp.mapper.OrdersMapper;
 import au.juy.juyerp.mapper.SupplierMapper;
+import au.juy.juyerp.mo.OrdersMO;
 import au.juy.juyerp.service.OrdersService;
 import au.juy.juyerp.utils.PageObject;
 import au.juy.juyerp.vo.OrdersVO;
+import com.alibaba.excel.event.Order;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.org.apache.xpath.internal.operations.Or;
@@ -74,6 +76,30 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         orderDetailQueryWrapper.in("order_no", list);
         int deletedOrderDetail = orderDetailMapper.delete(orderDetailQueryWrapper);
         if(deletedOrderDetail == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean batchVerify(String orderNoArr) {
+        ArrayList<String> list = new ArrayList<>();
+        Collections.addAll(list, orderNoArr.split(","));
+
+        OrdersMO ordersMO = new OrdersMO();
+        ordersMO.setOrderNos(list);
+        Long batchVerify = ordersMapper.batchVerify(ordersMO);
+        if (batchVerify == 0) return false;
+        return true;
+    }
+
+    @Override
+    public boolean batchInvalidate(String orderNoArr) {
+        ArrayList<String> list = new ArrayList<>();
+        Collections.addAll(list, orderNoArr.split(","));
+
+        OrdersMO ordersMO = new OrdersMO();
+        ordersMO.setOrderNos(list);
+        Long batchInvalidate = ordersMapper.batchInvalidate(ordersMO);
+        if (batchInvalidate == 0) return false;
         return true;
     }
 

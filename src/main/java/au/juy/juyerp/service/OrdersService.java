@@ -3,10 +3,7 @@ package au.juy.juyerp.service;
 import au.juy.juyerp.entity.Orders;
 import au.juy.juyerp.form.OrderSearchForm;
 import au.juy.juyerp.utils.PageObject;
-import au.juy.juyerp.vo.OrdersVO;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
  * <p>
@@ -22,4 +19,7 @@ public interface OrdersService extends IService<Orders> {
 
     boolean batchDelete(String orderNoArray);
 
+    boolean batchVerify(String orderNoArr);
+
+    boolean batchInvalidate(String orderNoArr);
 }

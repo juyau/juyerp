@@ -129,7 +129,7 @@
 
     function invalid(){
         var rows = $("#dgitem").datagrid("getSelections");
-        if(rows.length <= 0){
+        if(rows.length === 0){
             $.messager.alert("Info", "Please select orders to invalidate","error");
             return false;
         }
@@ -267,10 +267,10 @@
             <td th:text="${orders.supplierName}"></td>
             <td th:text="${orders.employeeName}"></td>
             <td th:text="${orders.orderDate}"></td>
-            <td th:if="${orders.invalid == 1}">Valid</td>
-            <td th:if="${orders.invalid == 0}">Invalid</td>
-            <td th:if="${orders.status == 1}">Verified</td>
-            <td th:if="${orders.status == 0}">Unverified</td>
+            <td th:if="${orders.invalid == 1}">valid</td>
+            <td th:if="${orders.invalid == 0}">invalid</td>
+            <td th:if="${orders.status == 1}">verified</td>
+            <td th:if="${orders.status == 0}">unverified</td>
             <td th:text="${orders.materialCode}"></td>
             <td th:text="${orders.materialName}"></td>
             <td th:text="${orders.batchNo}"></td>

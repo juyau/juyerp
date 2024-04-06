@@ -45,9 +45,29 @@
             <if test="orderDate1 != null and orderDate1 != '' and orderDate2 != null and orderDate2 != ''">
                 and o.order_date between #{orderDate1} and #{orderDate2}
             </if>
-
         </where>
-
     </select>
+
+    <update id="batchVerify" parameterType="au.juy.juyerp.mo.OrdersMO">
+        update orders set status = 1
+        <where>
+            <foreach collection="orderNos" item="orderNo" open="order_no in (" separator="," close=")" index="id" >
+                #{orderNo}
+            </foreach>
+        </where>
+    </update>
+
+    <update id="batchInvalidate" parameterType="au.juy.juyerp.mo.OrdersMO">
+        update orders set invalid = 0
+        <where>
+            <foreach collection="orderNos" item="orderNo" open="order_no in (" separator="," close=")" index="id" >
+                #{orderNo}
+            </foreach>
+        </where>
+    </update>
+
+
+
+
 
 </mapper>
