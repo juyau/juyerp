@@ -1,7 +1,12 @@
 package au.juy.juyerp.service;
 
 import au.juy.juyerp.entity.Orders;
+import au.juy.juyerp.form.OrderSearchForm;
+import au.juy.juyerp.utils.PageObject;
+import au.juy.juyerp.vo.OrdersVO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +17,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2024-04-05
  */
 public interface OrdersService extends IService<Orders> {
+
+    PageObject ordersList(PageObject pageObject, OrderSearchForm orderSearchForm);
+
+    boolean batchDelete(String orderNoArray);
 
 }

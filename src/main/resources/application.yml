@@ -13,5 +13,5 @@ server:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  mapper-locations: classpath:au/juy/juyshop/mapper/xml/*.xml
+  mapper-locations: classpath:au/juy/juyerp/mapper/xml/*.xml
   type-aliases-package: au.juy.juyerp.vo

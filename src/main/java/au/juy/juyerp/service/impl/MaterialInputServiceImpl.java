@@ -3,6 +3,7 @@ package au.juy.juyerp.service.impl;
 import au.juy.juyerp.entity.*;
 import au.juy.juyerp.form.MaterialInputSearchForm;
 import au.juy.juyerp.mapper.*;
+import au.juy.juyerp.mo.MaterialInputMO;
 import au.juy.juyerp.service.MaterialInputService;
 import au.juy.juyerp.utils.*;
 import com.alibaba.excel.EasyExcel;
@@ -208,16 +209,15 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
         switch (status) {
             case 1:
                 // verify
+                ArrayList<Integer> idList = new ArrayList<>();
                 for (String id : ids) {
-                    MaterialInput materialInput = materialInputMapper.selectById(id);
-
-                    assert materialInput != null;
-                    if (materialInput.getStatus() == 0){
-                        materialInput.setStatus(1);
-                    }
-                    int updated = materialInputMapper.updateById(materialInput);
-                    if (updated != 1) return false;
+                    idList.add(Integer.parseInt(id));
                 }
+                MaterialInputMO materialInputMO = new MaterialInputMO();
+                materialInputMO.setStatus(status);
+                materialInputMO.setIds(idList);
+                int verify = materialInputMapper.verify(materialInputMO);
+                if(verify == 0) return false;
                 flag = true;
                 break;
             case 2:
@@ -239,6 +239,7 @@ public class MaterialInputServiceImpl extends ServiceImpl<MaterialInputMapper, M
                     order.setOrderNo(orderNo);
                     order.setVerifyDate(LocalDateTime.now());
                     order.setVerifyPerson("managerSam");
+                    order.setEmployeeName(materialInput.getUserName());
                     int insert = ordersMapper.insert(order);
                     if(insert != 1) return false;
 

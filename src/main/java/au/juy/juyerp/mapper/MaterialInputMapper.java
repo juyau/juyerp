@@ -1,6 +1,7 @@
 package au.juy.juyerp.mapper;
 
 import au.juy.juyerp.entity.MaterialInput;
+import au.juy.juyerp.mo.MaterialInputMO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -12,5 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2024-03-24
  */
 public interface MaterialInputMapper extends BaseMapper<MaterialInput> {
+    int verify(MaterialInputMO materialInputMO);
 
 }

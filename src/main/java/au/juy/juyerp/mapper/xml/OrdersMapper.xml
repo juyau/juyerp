@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="au.juy.juyerp.mapper.OrdersMapper">
+    <select id="ordersVOList" resultType="OrdersVO" >
+        select o.order_type,o.order_no,s.supplier_name,o.employee_name,o.order_date,o.invalid,o.status,od.material_code,od.material_name,od.batch_no,od.style,od.storage_name,od.unit_name,od.order_count,od.order_flag,o.verify_person,o.verify_date
+               from orders o, order_detail od, supplier s
+               <where>
+                   o.order_no = od.order_no and o.supplier_id = s.supplier_id
+                    <if test="param3.supplierId != null and param3.supplierId != ''">
+                        and o.supplier_id = #{param3.supplierId}
+                    </if>
+                   <if test="param3.invalid != null">
+                       and o.invalid = #{param3.invalid}
+                   </if>
+                   <if test="param3.status != null">
+                       and o.status = #{param3.status}
+                   </if>
+                   <if test="param3.employeeName != null and param3.employeeName != ''">
+                       and o.employee_name like concat('%',#{param3.employeeName},'%')
+                   </if>
+                   <if test="param3.orderDate1 != null and param3.orderDate1 != '' and param3.orderDate2 != null and param3.orderDate2 != ''">
+                       and o.order_date between #{param3.orderDate1} and #{param3.orderDate2}
+                   </if>
+               </where>
+               limit #{param1}, #{param2}
+    </select>
+    
+    <select id="ordersVOCount" resultType="java.lang.Long">
+        select count(*)
+        from orders o, order_detail od, supplier s
+        <where>
+            o.order_no = od.order_no and o.supplier_id = s.supplier_id
+            <if test="supplierId != null and supplierId != ''">
+                and o.supplier_id = #{supplierId}
+            </if>
+            <if test="invalid != null">
+                and o.invalid = #{invalid}
+            </if>
+            <if test="status != null">
+                and o.status = #{status}
+            </if>
+            <if test="employeeName != null and employeeName != ''">
+                and o.employee_name like concat('%',#{employeeName},'%')
+            </if>
+            <if test="orderDate1 != null and orderDate1 != '' and orderDate2 != null and orderDate2 != ''">
+                and o.order_date between #{orderDate1} and #{orderDate2}
+            </if>
+
+        </where>
+
+    </select>
 
 </mapper>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Purchase Stock In</title>
+    <th:block th:include="common.html :: source"></th:block>
+</head>
+<body>
+<script type="text/javascript">
+    $(function(){
+        var pager = $(".easyui-datagrid").datagrid('getPager');
+        $(pager).pagination({
+            total:parseInt($("#total").val()),
+            pageSize:parseInt($("#size").val()),
+            pageNumber:parseInt($("#current").val()),
+            afterPageText: 'of {pages} pages',
+            pageList: [1, 5, 10, 20, 30, 50],
+            //refresh
+            onBeforeRefresh:function(current,size){
+                let supplierId = $("#supplierId").val();
+                let invalid = $("#invalid").val();
+                let status = $("#status").val();
+                let employeeName = $("#employeeName").val();
+                let orderDate1 = $("#orderDate1").val();
+                let orderDate2 = $("#orderDate2").val();
+                location.href="/orders/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate1=" + orderDate1 + "&orderDate2=" + orderDate2;
+            },
+            onSelectPage:function(current,size){
+                let supplierId = $("#supplierId").val();
+                let invalid = $("#invalid").val();
+                let status = $("#status").val();
+                let employeeName = $("#employeeName").val();
+                let orderDate1 = $("#orderDate1").val();
+                let orderDate2 = $("#orderDate2").val();
+                location.href="/orders/list?current=" + current + "&size=" + size + "&supplierId=" + supplierId + "&invalid=" + invalid + "&status=" + status + "&employeeName=" + employeeName + "&orderDate1=" + orderDate1 + "&orderDate2=" + orderDate2;
+            }
+        });
+    });
+
+    function add(){
+        var url="/orders/init";
+        var title="Add purchase stock in";
+        addTab1(title, url);
+    }
+
+    function del(){
+        var rows = $("#dgitem").datagrid("getSelections");
+        if(rows.length == 0){
+            $.messager.alert("Info", "Please select items to delete.","error");
+            return false;
+        }
+        var orderNoArr = "";
+        for(let i=0; i<rows.length; i++) {
+            let row = rows[i];
+            if (row.status == 'verified') {
+                $.messager.alert("Info", "selection includes verified orders,cannot delete.", "error");
+                return false;
+            }
+            if (row.invalid == 'invalid') {
+                $.messager.alert("Info", "selection includes invalid orders,cannot delete.", "error");
+                return false;
+            }
+            if((i+1) != rows.length){
+                orderNoArr += row.orderNo+",";
+            }else{
+                orderNoArr += row.orderNo;
+            }
+        }
+
+        $.messager.confirm('Info','Confirm delete？',function(res){
+            if(res){
+                $.post(
+                    "/orders/batchDelete?orderNoArr=" + orderNoArr,
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("Info", "Delete success.","info",function () {
+                                location.href = '/orders/list';
+                            });
+                        }else{
+                            $.messager.alert("Info", "Delete failed.","error");
+                        }
+                    }
+                );
+            }
+        })
+    }
+
+    function verify(){
+        var rows = $("#dgitem").datagrid("getSelections");
+        if(rows.length <= 0){
+            $.messager.alert("Info", "Please select orders to verify.","error");
+            return false;
+        }
+        var orderNoArr = "";
+        for(let i=0; i<rows.length; i++) {
+            let row = rows[i];
+            if (row.status == 'verified') {
+                $.messager.alert("Info", "Selection includes verified orders, cannot repeat verification.", "error");
+                return false;
+            }
+            if (row.invalid == 'invalid') {
+                $.messager.alert("Info", "Selection includes invalid orders, cannot verify.", "error");
+                return false;
+            }
+            if((i+1) != rows.length){
+                orderNoArr += row.orderNo+",";
+            }else{
+                orderNoArr += row.orderNo;
+            }
+        }
+
+        $.messager.confirm('Info','Confirm verification?',function(res){
+            if(res){
+                $.post(
+                    "/orders/batchVerify?orderNoArr=" + orderNoArr,
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("Info", "Verify success.","info",function () {
+                                location.href = '/orders/list';
+                            });
+                        }else{
+                            $.messager.alert("Info", "Verify failed.","error");
+                        }
+                    }
+                );
+            }
+        })
+    }
+
+    function invalid(){
+        var rows = $("#dgitem").datagrid("getSelections");
+        if(rows.length <= 0){
+            $.messager.alert("Info", "Please select orders to invalidate","error");
+            return false;
+        }
+        var orderNoArr = "";
+        for(let i=0; i<rows.length; i++) {
+            let row = rows[i];
+            if (row.status == 'verified') {
+                $.messager.alert("Info", "Selection includes verified orders, cannot invalidate.", "error");
+                return false;
+            }
+            if (row.invalid == 'invalid') {
+                $.messager.alert("Info", "Selection includes invalid orders, cannot invalidate.", "error");
+                return false;
+            }
+            if((i+1) != rows.length){
+                orderNoArr += row.orderNo+",";
+            }else{
+                orderNoArr += row.orderNo;
+            }
+        }
+
+        $.messager.confirm('Info','Confirm invalidate?',function(res){
+            if(res){
+                $.post(
+                    "/orders/batchInvalid?orderNoArr=" + orderNoArr,
+                    function (data) {
+                        if(data == "success"){
+                            $.messager.alert("Info", "Invalidate success.","info",function () {
+                                location.href = '/orders/list';
+                            });
+                        }else{
+                            $.messager.alert("Info", "Invalidate failed.","error");
+                        }
+                    }
+                );
+            }
+        })
+    }
+
+    function edit(){
+        var rows = $("#dgitem").datagrid("getSelections");
+        if(rows.length <= 0){
+            $.messager.alert("Info", "Please select order to edit.","error");
+            return false;
+        }
+
+        if(rows.length > 1){
+            $.messager.alert("Info", "Please select only one order at a time.","error");
+            return false;
+        }
+        var url = "/orders/edit?orderNo="+rows[0].orderNo;
+        var title="Material Stock-In Maintenance"+rows[0].orderNo;
+        addTab1(title, url);
+    }
+
+    function ordersSearch() {
+        document.forms[0].submit();
+    }
+</script>
+<form action="/orders/list" method="post">
+    <table width="100%" border="0">
+        <tr>
+            <td>
+                <a class="easyui-linkbutton" plain="true" icon="icon-add" href="javascript:void(0);" onclick="add()">Add</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-cut" href="javascript:void(0);" onclick="del()">Delete</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-edit" href="javascript:void(0);" onclick="verify()">Verify</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-no" href="javascript:void(0);" onclick="invalid()">Invalidate</a>
+                <a class="easyui-linkbutton" plain="true" icon="icon-tip" href="javascript:void(0);" onclick="edit()">Detail</a>
+            </td>
+        </tr>
+        <tr>
+            <td align="right">
+                Supplier <select name="supplierId"  id="supplierId" style="width:160px">
+                <option value="">No Selection</option>
+                <option th:each="supplier:${supplierList}"
+                        th:value="${supplier.supplierId}"
+                        th:text="'('+${supplier.supplierCode}+')'+${supplier.supplierName}"
+                        th:selected="${supplier.supplierId == form.supplierId}"
+                ></option>
+            </select>
+                Order Status
+                <select name="invalid" id="invalid" th:value="${form.invalid}"  style="width:100px">
+                    <option value="" th:selected="${form.invalid == ''}">No Selection</option>
+                    <option value="1" th:selected="${form.invalid == 1}">Valid</option>
+                    <option value="0" th:selected="${form.invalid == 0}">Invalid</option>
+                </select>
+                Verify Status
+                <select name="status" id="status" th:value="${form.status}" style="width:100px">
+                    <option value="" th:selected="${form.status == ''}">No Selection</option>
+                    <option value="1" th:selected="${form.status == 1}">Verified</option>
+                    <option value="0" th:selected="${form.status == 0}">Vnverified</option>
+                </select>
+                EmployeeName<input type="text" name="employeeName" th:value="${form.employeeName}" id="employeeName" style="width:160px">
+                Date Range<input type="text" th:value="${form.orderDate1}" class="easyui-datebox" name="orderDate1" id="orderDate1" style="width:160px">
+                -<input type="text" th:value="${form.orderDate2}" class="easyui-datebox" name="orderDate2" id="orderDate2"  style="width:160px">
+                <a href="javascript:void(0);" class="easyui-linkbutton" plain="true" onclick="ordersSearch()" iconCls="icon-search" >Search</a>
+            </td>
+        </tr>
+    </table>
+</form>
+<input type="hidden" id="total" th:value="${page.total}"/>
+<input type="hidden" id="size" th:value="${page.size}"/>
+<input type="hidden" id="current" th:value="${page.current}"/>
+<table class="easyui-datagrid" pagination="true" id="dgitem" style="width:auto;height:420px"  singleSelect="false">
+    <thead>
+    <tr>
+        <th field="orderNo" checkbox="true" >Please Select</th>
+        <th field="orderType" align="center" width="70">Order Type</th>
+        <th field="orderNo1" align="center" width="140">Order No.</th>
+        <th field="supplierName" align="center" width="150">Supplier</th>
+        <th field="employeeName" align="center" width="80">Employee Name</th>
+        <th field="oprDate" align="center" width="150">Order Date</th>
+        <th field="invalid" align="center" width="60">Valid Status</th>
+        <th field="status" align="center" width="60">Verify Status</th>
+        <th field="materialCode" align="center" width="60">Material Code</th>
+        <th field="materialName" align="center" width="80">Material Name</th>
+        <th field="batchNo" align="center" width="140">Batch Number</th>
+        <th field="style" align="center" width="60">Specification</th>
+        <th field="storageName" align="center" width="60">Storage Name</th>
+        <th field="materialUnit" align="center" width="60">Unit</th>
+        <th field="orderCnt" align="center" width="60">Qty</th>
+        <th field="orderFlag" align="center" width="60">Flag</th>
+        <th field="aduitPerson" align="center" width="80">Verify staff</th>
+        <th field="aduitDate" align="center" width="140">Verify Date</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr th:each="orders:${page.data}">
+            <td th:text="${orders.orderNo}"></td>
+            <td th:if="${orders.orderType == 1}">Purchase stock in</td>
+            <td th:if="${orders.orderType == 2}">Purchase return</td>
+            <td th:if="${orders.orderType == 3}">Sales stock out</td>
+            <td th:if="${orders.orderType == 4}">Sales return</td>
+            <td th:text="${orders.orderNo}"></td>
+            <td th:text="${orders.supplierName}"></td>
+            <td th:text="${orders.employeeName}"></td>
+            <td th:text="${orders.orderDate}"></td>
+            <td th:if="${orders.invalid == 1}">Valid</td>
+            <td th:if="${orders.invalid == 0}">Invalid</td>
+            <td th:if="${orders.status == 1}">Verified</td>
+            <td th:if="${orders.status == 0}">Unverified</td>
+            <td th:text="${orders.materialCode}"></td>
+            <td th:text="${orders.materialName}"></td>
+            <td th:text="${orders.batchNo}"></td>
+            <td th:text="${orders.style}"></td>
+            <td th:text="${orders.storageName}"></td>
+            <td th:text="${orders.unitName}"></td>
+            <td th:text="${orders.orderCount}"></td>
+            <td th:text="${orders.orderFlag}"></td>
+            <td th:text="${orders.verifyPerson}"></td>
+            <td th:text="${orders.verifyDate}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
